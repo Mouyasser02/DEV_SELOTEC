@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="custom_selotec_view_production_lot_form" model="ir.ui.view">
+        <field name="name">stock.production.lot.form</field>
+        <field name="model">stock.production.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_form"/>
+        <field name="arch" type="xml">
+
+
+            <xpath expr="//field[@name='product_id']" position="after">
+                 <field name="type_article"/>
+                 <field name="ime1" attrs="{'required': [('type_article', 'in', ['Mono Sim', 'Double Sim'])]}"/>
+                 <field name="ime2" attrs="{'required': [('type_article', '=', 'Double Sim')], 'invisible': [('type_article', '=', 'Mono Sim')]}"/>
+            </xpath>
+            
+
+
+        </field>
+    </record>
+
+
+    <record id="custom_selotec_view_production_lot_tree" model="ir.ui.view">
+        <field name="name">stock.production.lot.tree</field>
+        <field name="model">stock.production.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_tree"/>
+        <field name="arch" type="xml">
+
+
+            <xpath expr="//field[@name='product_id']" position="after">
+                 <field name="type_article"/>
+                 <field name="ime1" />
+                 <field name="ime2" />
+            </xpath>
+            
+
+
+        </field>
+    </record>
+
+    
+
+    
+</odoo>
+
+
+
