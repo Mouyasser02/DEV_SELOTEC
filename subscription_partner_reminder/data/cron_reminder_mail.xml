@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="subscription_partner_reminder_ir_cron_reminder_mail" model="ir.cron">
+        <field name="name">Subscription: Send reminder mail</field>
+        <field name="active" eval="True"/>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_sale_subscription"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_send_reminder_mail()</field>
+    </record>
+</odoo>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add action to navigate to tree view -->
+    <record id="serial_number_smart_buttons_action_production_lot" model="ir.actions.act_window">
+        <field name="name">Lots/Serial Numbers</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">stock.production.lot</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="stock.view_production_lot_tree"/>
+        <field name="search_view_id" ref="stock.search_product_lot_filter"/>
+        <field name="context">{'search_default_group_by_product': 1, 'display_complete': True,
+            'default_company_id':
+            allowed_company_ids[0]}
+        </field>
+    </record>
+
+    <!-- Inherit list view -->
+    <record id="serial_number_smart_buttons_view_production_lot_tree" model="ir.ui.view">
+        <field name="name">stock.production.lot.tree</field>
+        <field name="model">stock.production.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='create_date']" position="after">
+                <field name="last_delivery_date" string="Date dernier BL"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

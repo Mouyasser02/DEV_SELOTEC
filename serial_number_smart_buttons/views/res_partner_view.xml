@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Smart button to navigate to stock.production.lot tree view from the contact for view -->
+    <record id="serial_number_smart_buttons_view_partner_form_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button string="Stock" type="object"
+                        name="action_view_stock_production_lot"
+                        class="oe_stat_button" icon="fa-bars"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

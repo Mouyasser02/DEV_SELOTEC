@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="subscription_partner_relaunch_view_partner_form_inherit" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='sales_purchases']" position="after">
+                    <page name='subscription' string="Subscription">
+                        <group name="container_row_2">
+                            <group string="Period" name="Period">
+                                <div class="o_row">
+                                    <label for="sub_period" string="Relaunch delay before end of subscription"
+                                           class="oe_inline font-weight-bold"/>
+                                    <field name="sub_period" class="oe_inline"/>
+                                    <field name="sub_period_unit" class="oe_inline"/>
+                                </div>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

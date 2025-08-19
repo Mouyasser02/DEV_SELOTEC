@@ -19,7 +19,7 @@ class product_template(models.Model):
         [('Mono Sim', 'Mono Sim'),
          ('Double Sim', 'Double Sim'),
          ('Accessoires', 'Accessoires')],
-        string="Type", required=True, default='Mono Sim'
+        string="Type", required=True, default='Accessoires'
     )
 
 
