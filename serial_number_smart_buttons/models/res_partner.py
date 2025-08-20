@@ -9,7 +9,7 @@ class res_partner(models.Model):
 
     def _compute_lot_ids(self):
         for rec in self:
-            moves = rec.env['stock.move'].search([('partner_id', '=', rec.id), ('product_id.tracking', '!=', 'none')])
+            moves = rec.env['stock.move'].search([('partner_id', '=', rec.id), ('product_id.tracking', '!=', 'none'), ('picking_code', '=', 'outgoing')])
             rec.lot_ids = moves.mapped(lambda x: x.lot_ids)
 
 

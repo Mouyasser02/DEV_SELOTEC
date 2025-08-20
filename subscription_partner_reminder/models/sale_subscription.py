@@ -21,8 +21,8 @@ class sale_subscription(models.Model):
         today = date.today()
         for subscription in self.search([]):
             if subscription.partner_id:
-                if subscription.stage_id.type != "done":
+                if subscription.stage_id.type == "in_progress":
                     reminder_days = subscription.partner_id.sub_period * 30 if subscription.partner_id.sub_period_unit == "month" else subscription.partner_id.sub_period
-                    if reminder_days:
-                        if (subscription.date - today) <= timedelta(days=reminder_days):
+                    if reminder_days and subscription.date:
+                        if ((subscription.date - today) >= timedelta(days=0)) and ((subscription.date - today) <= timedelta(days=reminder_days)):
                             subscription.send_subscription_reminder()
