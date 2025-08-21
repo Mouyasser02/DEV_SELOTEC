@@ -8,38 +8,48 @@ class res_partner(models.Model):
 
     def _compute_lot_ids(self):
         for rec in self:
-            # Get all relevant moves in a single query with proper domain
-            moves = rec.env['stock.move'].search([
-                ('partner_id', '=', rec.id),
+            # Get all move lines for the partner with tracked products
+            move_lines = rec.env['stock.move.line'].search([
+                ('move_id.partner_id', '=', rec.id),
                 ('product_id.tracking', '!=', 'none'),
-                ('picking_code', 'in', ['outgoing', 'incoming'])
+                ('state', '=', 'done'),
+                ('picking_code', 'in', ['outgoing', 'incoming']),
             ])
 
-            # Separate moves by type using mapped approach (more efficient)
-            outgoing_moves = moves.filtered(lambda m: m.picking_code == 'outgoing')
-            incoming_moves = moves.filtered(lambda m: m.picking_code == 'incoming')
+            # Separate move lines by picking code
+            outgoing_lines = move_lines.filtered(lambda ml: ml.picking_code == 'outgoing')
+            incoming_lines = move_lines.filtered(lambda ml: ml.picking_code == 'incoming')
 
-            # Get all move_orig_ids from incoming moves in one go
-            all_incoming_orig_ids = incoming_moves.mapped('move_orig_ids')
-
-            # First filter: remove outgoing moves that are origin of any incoming move
-            filtered_outgoing = outgoing_moves - all_incoming_orig_ids
-
-            # Second filter: find incoming moves that have incoming move_orig_ids
-            incoming_with_incoming_orig = incoming_moves.filtered(
-                lambda m: any(orig.picking_code == 'incoming' for orig in m.move_orig_ids)
+            # Identify incoming lines that are returns of returns (should be treated as outgoing)
+            incoming_to_treat_as_outgoing = incoming_lines.filtered(
+                lambda ml: ml.move_id.move_orig_ids and
+                           all(orig_move.picking_code == 'incoming' for orig_move in ml.move_id.move_orig_ids)
             )
 
-            # Get outgoing move_orig_ids from the filtered incoming moves
-            outgoing_orig_from_incoming = incoming_with_incoming_orig.mapped('move_orig_ids').filtered(
-                lambda m: m.picking_code == 'outgoing'
+
+            # Combine regular outgoing lines with the special incoming lines (returns of returns)
+            all_outgoing_lot_lines = outgoing_lines | incoming_to_treat_as_outgoing
+
+            # Find all lines that have been returned (regular returns)
+            returned_lines = incoming_lines.filtered(
+                lambda ml: ml.move_id.move_orig_ids and
+                           any(orig_move.picking_code == 'outgoing' for orig_move in ml.move_id.move_orig_ids)
             )
 
-            # Combine the results
-            final_moves = filtered_outgoing | outgoing_orig_from_incoming
 
-            # Assign lot_ids
-            rec.lot_ids = final_moves.mapped('lot_ids')
+            # Get the lot IDs from returned lines to exclude them
+            returned_lot_ids = returned_lines.mapped('lot_id')
+
+            # Final filter: exclude any lines that have lot IDs that were returned
+            # But keep returns of returns even if they have the same lot ID
+            final_lines = all_outgoing_lot_lines.filtered(
+                lambda ml: ml.lot_id not in returned_lot_ids or ml in incoming_to_treat_as_outgoing
+            )
+
+
+            # Assign the lot IDs
+            rec.lot_ids = final_lines.mapped('lot_id')
+
 
 
     def action_view_stock_production_lot(self):
